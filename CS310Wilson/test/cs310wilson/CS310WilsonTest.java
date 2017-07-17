@@ -44,7 +44,7 @@ public class CS310WilsonTest {
     public void testAddRealtor() {
         String[] arr1 = {"REALTOR", "ADD", "AB1234567", "JAMES", "HETFIELD", "303-333-3333", "5.6"};        
         CS310Wilson.addRealtor(arr1);
-        String[] arr2 = {"REALTOR", "ADD", "AB1234569", "JAMES", "HETFIELD", "303-333-3333", "A.6"};
+        String[] arr2 = {"REALTOR", "ADD", "AB1234569", "JAMES", "HETFIELD", "303-333-3333", "2.6"};
         CS310Wilson.addRealtor(arr2);
         String[] arr3 = {"REALTOR", "ADD", "AB1234568", "JAMES", "HETFIELD", "303333-3333", "5.6"};
         CS310Wilson.addRealtor(arr3);        

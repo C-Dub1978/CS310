@@ -33,14 +33,51 @@ public class PropertyLogImpl {
     }
     
     public boolean remove(String license) {
-        return true;
+        int count = 0;
+        boolean propertyExists = false;
+        for(Property p : propertyArray) {
+            if(p.getRealtorLicenseNum().equals(license)) {
+                System.out.println("Property with mls " + p.getMls() + 
+                        " deleted");
+                propertyArray[count] = null;
+                propertyExists = true;
+            }
+            count++;
+        }
+        if(propertyExists) {
+            return true;
+        }
+        return false;
     }
     
     public boolean remove(int mlsNum) {
-        return true;
+        int count = 0;
+        boolean propertyRemoved = false;
+        for(Property p : propertyArray) {
+            if(p.getMls() == mlsNum) {
+                System.out.println("Property with mls " + p.getMls() +
+                        " deleted");
+                propertyArray[count] = null;
+                propertyRemoved = true;
+            }
+            count++;
+        }
+        if(propertyRemoved) {
+            return true;
+        }
+        return false;
     }
     
     public boolean isMlsUnique(int mlsNum) {
+        if(propertyArray.length == 0) {
+            return true;
+        }
+        // TODO change this to binary search to help time complexity
+        for(int i = 0; i < numProperties; i++) {
+            if(mlsNum == propertyArray[i].getMls()) {
+                return false;
+            }
+        }
         return true;
     } 
     

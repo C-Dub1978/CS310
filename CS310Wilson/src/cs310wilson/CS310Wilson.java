@@ -18,17 +18,13 @@ public class CS310Wilson {
     static RealtorLogImpl realtorLogImpl = new RealtorLogImpl();
     static PropertyLogImpl propertyLogImpl = new PropertyLogImpl();
     
-    /** main method
-     *   tries to open the file and the scanner, reads the data line by line, and calls on both realtor or property
-     *   constructors to attempt to build the corresponding objects, then verifies the data fields
-     * @param args, the command line arguments
-     */
-    public static void main(String[] args) {     
-        
+    
+    public static void main(String[] args) {        
+        processDataFile();
     }    
     
     public static void processDataFile() {
-        final String INPUT_FILENAME = "input/assn1input1.txt"; 
+        final String INPUT_FILENAME = "input/assn2input1.txt"; 
         File inputFile = null;
         Scanner inputScanner = null;
         try {
@@ -57,7 +53,7 @@ public class CS310Wilson {
                     addProperty(dataLine);
                 }
                 else if(dataLine[1].toUpperCase().equals("DEL")) {
-                    deleteProperty(dataLine[2]);
+                    deleteProperty(Integer.parseInt(dataLine[2]));
                 }
                 else {
                     
@@ -68,50 +64,106 @@ public class CS310Wilson {
         }
     }
     
-    public static void addRealtor(String[] attribs) {        
-        double commission;
-        Realtor realtor = null;
-        try {
-            commission = Double.parseDouble(attribs[6]);
-            realtor = new Realtor(attribs[2], attribs[3], attribs[4],
-            attribs[5], commission);
-            boolean validLicense = realtor.checkRealtorLicense();
-            boolean validPhone = realtor.checkPhoneNumber();
-            boolean uniqueLicense = 
-                realtorLogImpl.isLicenseUnique(realtor.getLicenseNum());
-            if(!validLicense) {
-                System.out.println("Error, license " + realtor.getLicenseNum() +
-                    " is invalid");
-            }
-            if(!validPhone) {
-                System.out.println("Error, phone " + realtor.getPhoneNum() +
-                    " is invalid");
-            }
-            if(uniqueLicense) {
-                realtorLogImpl.add(realtor);
-                System.out.println("Realtor with license number " + 
-                        realtor.getLicenseNum() + " added to log");
-            } else {
-                System.out.println("Error, non-unique license number, " +
-                        "realtor will not be added to log");
-            }
-        } catch (NumberFormatException e) {
-            System.err.println("Error, couldn't parse commission, realtor " +
-                    "with licenseNum " + attribs[2] + " not" +
-                    " added");
-        }        
+    public static void addRealtor(String[] attribs) {           
+        double commission = Double.parseDouble(attribs[6]);
+        Realtor realtor = new Realtor(attribs[2], attribs[3], attribs[4],
+        attribs[5], commission);
+        boolean validLicense = realtor.checkRealtorLicense();
+        boolean validPhone = realtor.checkPhoneNumber();
+        boolean uniqueLicense = 
+            realtorLogImpl.isLicenseUnique(realtor.getLicenseNum());
+        if(!validLicense) {
+            System.out.println("Error, license " + realtor.getLicenseNum() +
+                " is invalid");
+        }
+        if(!validPhone) {
+            System.out.println("Error, phone " + realtor.getPhoneNum() +
+                " is invalid");
+        }
+        if(uniqueLicense) {
+            realtorLogImpl.add(realtor);
+            System.out.println("Realtor with license number " + 
+                    realtor.getLicenseNum() + " added to log");
+        } else {
+            System.out.println("Error, non-unique license number, " +
+                    "realtor will not be added to log");
+        }
+              
     }
     
     public static void deleteRealtor(String license) {
-        
+        boolean isLicenseUnique = realtorLogImpl.isLicenseUnique(license);
+        boolean removed = false;
+        if(!isLicenseUnique) {
+            removed = realtorLogImpl.remove(license);
+        }
+        if(removed) {
+            System.out.println("Realtor with license " + license + 
+                    " removed from list, deleting all properties " +
+                    "associated with that realtor");
+            
+        }
+        else {
+            System.out.println("Error removing realtor with license " + 
+                    license);
+        }
     }
     
     public static void addProperty(String[] attribs) {
-        
+        int mls = Integer.parseInt(attribs[2]);        
+        int zip = Integer.parseInt(attribs[7]);
+        int numBedrooms = Integer.parseInt(attribs[8]);
+        double numBathrooms = Double.parseDouble(attribs[9]);
+        boolean isSold;
+        if(attribs[10].toUpperCase().equals("Y")) {
+            isSold = true;
+        } else {
+            isSold = false;
+        }
+        double askingPrice = Double.parseDouble(attribs[11]);
+        Property property = new Property(mls, attribs[3], attribs[4],
+            attribs[5], attribs[6], zip, numBedrooms, numBathrooms, isSold,
+            askingPrice);
+        boolean validMls = property.checkMlsNum();
+        boolean validState = property.checkState();
+        boolean validZip = property.checkZipCode();
+        if(!validMls) {
+            System.out.println("Error, mls " + property.getMls() + " is bad");
+        }
+        if(!validState) {
+            System.out.println("Error, bad state code, " + property.getState()
+                + " for mls " + property.getMls());
+        }
+        if(!validZip) {
+            System.out.println("Error, bad zip code, " + property.getZip() +
+                    " for mls " + property.getZip());
+        }
+        boolean isRealtorUnique = realtorLogImpl.isLicenseUnique(attribs[3]);
+        boolean isPropertyUnique = propertyLogImpl.isMlsUnique(mls);
+        if(!isRealtorUnique && isPropertyUnique) {
+            propertyLogImpl.add(property);
+            System.out.println("Property with mls number " + mls + " added");
+        }
+        else {
+            String errMsg = "Error, ";
+            if(isRealtorUnique) {
+                errMsg += "non-existant realtor for this property. ";
+            } else if(!isPropertyUnique) {
+                errMsg += "Property already exists. ";
+            }
+            errMsg += " Property will not be added";
+            System.out.println(errMsg);
+        }
     }
     
-    public static void deleteProperty(String mls) {
-        
+    public static void deleteProperty(int mls) {
+        boolean isPropertyUnique = propertyLogImpl.isMlsUnique(mls);
+        if(!isPropertyUnique) {
+            propertyLogImpl.remove(mls);
+        }
+        else {
+            System.out.println("Property with mls " + mls + " not found");
+        }
     }
 
     

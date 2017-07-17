@@ -11,7 +11,7 @@ import java.util.Objects;
  * @author Chris Wilson
  * @version x Java Assn 1
  */
-public class Realtor {
+public class Realtor implements Comparable {
     private String licenseNum;
     private String firstName;
     private String lastName;
@@ -244,6 +244,20 @@ public class Realtor {
         }
         // valid phone number in xxx-xxx-xxxx format with no strings inbetween the dashes
         return true;
-    }
+    }    
+
+    @Override
+    public int compareTo(Object o) {
+        Realtor obj = null;
+        try {
+            obj = (Realtor) o;
+        }
+        catch(ClassCastException e) {
+            System.out.println("Error casting object to realtor");
+        }
+        String compareLicense = obj.getLicenseNum();
+        return this.getLicenseNum().compareTo(compareLicense);
+    }    
+    
 }
 

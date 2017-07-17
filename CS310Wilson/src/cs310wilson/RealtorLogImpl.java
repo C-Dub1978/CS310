@@ -6,6 +6,7 @@
 package cs310wilson;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  *
@@ -23,30 +24,46 @@ public class RealtorLogImpl {
     }
     
     public void add(Realtor obj) {
-        
+        realtorLog.add(obj);
+        Collections.sort(realtorLog);
     }
     
     public boolean remove(String license) {
-        return true;
+        int count = 0;
+        for(Realtor r : realtorLog) {
+            if(r.getLicenseNum().equals(license)) {
+                realtorLog.remove(count);
+                return true;
+            }
+            count++;
+        }
+        return false;
     }
     
     public boolean isLicenseUnique(String license) {
         if(realtorLog.isEmpty()) {
             return true;
-        }
-        if(realtorLog.size() > 0) {
-            for(Realtor r: realtorLog) {
-                if(license.equals(r.getLicenseNum())) {
-                    return true;
-                }
+        }        
+        for(Realtor r: realtorLog) {
+            if(license.equals(r.getLicenseNum())) {
+                return false;
             }
-        }
-        return false;
+        }        
+        return true;
     }
 
     @Override
     public String toString() {
-        return "RealtorLogImpl{" + "realtorLog=" + realtorLog + '}';
+        StringBuilder str = new StringBuilder();
+        int count = 0;
+        for(Realtor r : realtorLog) {
+            str.append(r.getLicenseNum());
+            str.append(" - index ");
+            str.append(count);
+            str.append("\n");
+            count++;
+        }
+        return str.toString();
     }
     
     
