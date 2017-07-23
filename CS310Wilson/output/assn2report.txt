@@ -1,0 +1,42 @@
+
+AB1234567	Zoss, Joe
+
+	7777777	             810 ESSEX DR	3/1.50	$320000.00	SOLD
+
+	Number of property listings for realtor: 1
+	Total sales value of property listings for realtor: 320000.0
+
+BB1234567	Rose, JoJo
+
+
+	Number of property listings for realtor: 0
+	Total sales value of property listings for realtor: 0.0
+
+FD1234567	Kooz, Jill
+
+
+	Number of property listings for realtor: 0
+	Total sales value of property listings for realtor: 0.0
+
+MX1234567	Chelios, Chris
+
+
+	Number of property listings for realtor: 0
+	Total sales value of property listings for realtor: 0.0
+
+ZB1234567	Hetfield, James
+
+	7654321	        312 GRANVILLE AVE	4/2.50	$325000.00	
+	5555555	          20 Pine Wood ln	5/3.50	$675466.00	
+
+	Number of property listings for realtor: 2
+	Total sales value of property listings for realtor: 1000466.0
+
+ZZ1234567	Munoz, Mark
+
+	1234567	      3303 Boulder Canyon	3/2.50	$575000.00	SOLD
+	1233333	            1 Big Wok Way	3/2.50	$345666.00	
+
+	Number of property listings for realtor: 2
+	Total sales value of property listings for realtor: 920666.0
+

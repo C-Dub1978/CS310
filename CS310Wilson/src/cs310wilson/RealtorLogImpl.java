@@ -1,7 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Class for keeping track of the ArrayList of realtors and it's associated
+ * functionality
  */
 package cs310wilson;
 
@@ -9,63 +8,104 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- *
- * @author klown
+ * Realtor log class
+ * @author Chris Wilson
+ * @version java assn 2
  */
 public class RealtorLogImpl {
-    private ArrayList<Realtor> realtorLog;
+    private RealtorNode head;
+    private RealtorNode tail;
+    private RealtorNode current;
+    private int size;
     
+    /**
+     * Default constructor
+     */
     public RealtorLogImpl() {
-        realtorLog = new ArrayList<>();
+        head = new RealtorNode();        
+        tail = head;
+        current = null;
+        size = 0;
     }
-    
-    public ArrayList<Realtor> getRealtorLog() {
-        return realtorLog;
-    }
-    
-    public void add(Realtor obj) {
-        realtorLog.add(obj);
-        Collections.sort(realtorLog);
-    }
-    
-    public boolean remove(String license) {
-        int count = 0;
-        for(Realtor r : realtorLog) {
-            if(r.getLicenseNum().equals(license)) {
-                realtorLog.remove(count);
+
+    public boolean add(Realtor r) {
+        current = head;
+        RealtorNode n = new RealtorNode(r);
+        if(size == 0) {
+            head.setNext(n);
+            tail = n;
+            size++;
+            return true;
+        }        
+        else if(size > 0) {
+            if(isNodeGreaterThanTail(n)) {
+                addToTail(r);
                 return true;
             }
-            count++;
+            current = head;
+            while(current.getNext() != null) {
+                int weight = current.getNext().getRealtor().compareTo(r);
+                if(weight == -1) {
+                    current = current.getNext();
+                }
+                else if(weight >= 0) {
+                    RealtorNode temp = current.getNext();
+                    current.setNext(n);
+                    n.setNext(temp);                    
+                    size++;
+                    return true;
+                }                
+            }
         }
         return false;
     }
     
-    public boolean isLicenseUnique(String license) {
-        if(realtorLog.isEmpty()) {
-            return true;
-        }        
-        for(Realtor r: realtorLog) {
-            if(license.equals(r.getLicenseNum())) {
-                return false;
-            }
-        }        
+    public boolean addToTail(Realtor r) {
+        RealtorNode n = new RealtorNode(r);
+        tail.setNext(n);
+        tail = n;
+        size++;
         return true;
     }
-
-    @Override
-    public String toString() {
-        StringBuilder str = new StringBuilder();
-        int count = 0;
-        for(Realtor r : realtorLog) {
-            str.append(r.getLicenseNum());
-            str.append(" - index ");
-            str.append(count);
-            str.append("\n");
-            count++;
+    
+    public boolean isNodeGreaterThanTail(RealtorNode r) {
+        if(tail != null) {
+        int weight = tail.getRealtor().compareTo(r.getRealtor());
+        if(weight == -1 || weight == 0) {            
+            return true;
         }
-        return str.toString();
+        }
+        return false;
+    }
+    
+    public void traverseDisplay() {
+        current = head;
+        for(int i = 0; i < size; i++) {
+            current = current.getNext();
+            System.out.println(current.toString());
+        }
+    }
+    
+    public void clear() {
+        head.setNext(null);
+        tail = head;
+        size = 0;        
     }
     
     
+    public int getSize() {
+        return size;
+    }    
     
+    
+    /**
+     * Method to check if a realtor license is in the list
+     * @param license, realtor license to check for
+     * @return boolean value of success/failure
+     */
+    public boolean isLicenseUnique(String license) {
+        //TODO: iterate through list with a loop and get the license,
+        //  check for if exists
+        return true;
+    }   
 }

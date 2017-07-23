@@ -1,7 +1,8 @@
 /*
  * This program will read a list of realtor and/or property data from a csv file, and try to create 
- * realtor and property objects with said data. It will help a real estate office in converting data from the csv
- * files into useful information
+ * realtor and property objects with said data. It will help a real estate 
+ * office in converting data from the csv
+ * files into useful information, then it will write the data to a file
  */
 package cs310wilson;
 
@@ -12,21 +13,31 @@ import java.util.Scanner;
 /** Main Class, reads the data from the specified file and builds objects with the data
  * 
  * @author Chris Wilson
- * @version x Java Assn 1
+ * @version x Java Assn 2
  */
 public class CS310Wilson {
     static RealtorLogImpl realtorLogImpl = new RealtorLogImpl();
     static PropertyLogImpl propertyLogImpl = new PropertyLogImpl();
     
-    
+    /**
+     * Main method, entry to program, calls method to process data then
+     *  generate report
+     * @param args
+     */
     public static void main(String[] args) {        
         processDataFile();
+        generateReport();
     }    
     
+    /**
+     * Method to process the data file
+     */
     public static void processDataFile() {
-        final String INPUT_FILENAME = "input/assn2input1.txt"; 
+        final String INPUT_FILENAME = "input/assn2input2.txt"; 
         File inputFile = null;
         Scanner inputScanner = null;
+        System.out.println("Reading data from file: " + INPUT_FILENAME);
+        System.out.println();
         try {
             inputFile = new File(INPUT_FILENAME);
             inputScanner = new Scanner(inputFile);
@@ -60,10 +71,16 @@ public class CS310Wilson {
                 }
             } else {
                 // not realtor or property in the first token
+                System.out.println("\tNeither realtor, nor property in first"
+                        + " token");
             }
         }
     }
     
+    /**
+     * Method to add a realtor to the realtor log
+     * @param attribs, string array from csv file
+     */
     public static void addRealtor(String[] attribs) {           
         double commission = Double.parseDouble(attribs[6]);
         Realtor realtor = new Realtor(attribs[2], attribs[3], attribs[4],
@@ -73,24 +90,28 @@ public class CS310Wilson {
         boolean uniqueLicense = 
             realtorLogImpl.isLicenseUnique(realtor.getLicenseNum());
         if(!validLicense) {
-            System.out.println("Error, license " + realtor.getLicenseNum() +
+            System.out.println("\t\tError, license " + realtor.getLicenseNum() +
                 " is invalid");
         }
         if(!validPhone) {
-            System.out.println("Error, phone " + realtor.getPhoneNum() +
+            System.out.println("\t\tError, phone " + realtor.getPhoneNum() +
                 " is invalid");
         }
         if(uniqueLicense) {
             realtorLogImpl.add(realtor);
-            System.out.println("Realtor with license number " + 
+            System.out.println("\tRealtor with license number " + 
                     realtor.getLicenseNum() + " added to log");
         } else {
-            System.out.println("Error, non-unique license number, " +
+            System.out.println("\t\tError, non-unique license number, " +
                     "realtor will not be added to log");
         }
               
     }
     
+    /**
+     * Method to attempt to delete a realtor from the log
+     * @param license, the realtor license number
+     */
     public static void deleteRealtor(String license) {
         boolean isLicenseUnique = realtorLogImpl.isLicenseUnique(license);
         boolean removed = false;
@@ -98,17 +119,21 @@ public class CS310Wilson {
             removed = realtorLogImpl.remove(license);
         }
         if(removed) {
-            System.out.println("Realtor with license " + license + 
+            System.out.println("\tRealtor with license " + license + 
                     " removed from list, deleting all properties " +
                     "associated with that realtor");
-            
+            propertyLogImpl.remove(license);
         }
         else {
-            System.out.println("Error removing realtor with license " + 
-                    license);
+            System.out.println("\t\tError removing realtor with license " + 
+                    license + ", they don't exist");
         }
     }
     
+    /**
+     * Method to try to add a property to the log
+     * @param attribs, string array from csv file
+     */
     public static void addProperty(String[] attribs) {
         int mls = Integer.parseInt(attribs[2]);        
         int zip = Integer.parseInt(attribs[7]);
@@ -128,24 +153,24 @@ public class CS310Wilson {
         boolean validState = property.checkState();
         boolean validZip = property.checkZipCode();
         if(!validMls) {
-            System.out.println("Error, mls " + property.getMls() + " is bad");
+            System.out.println("\t\tError, mls " + property.getMls() + " is bad");
         }
         if(!validState) {
-            System.out.println("Error, bad state code, " + property.getState()
+            System.out.println("\t\tError, bad state code, " + property.getState()
                 + " for mls " + property.getMls());
         }
         if(!validZip) {
-            System.out.println("Error, bad zip code, " + property.getZip() +
+            System.out.println("\t\tError, bad zip code, " + property.getZip() +
                     " for mls " + property.getZip());
         }
         boolean isRealtorUnique = realtorLogImpl.isLicenseUnique(attribs[3]);
         boolean isPropertyUnique = propertyLogImpl.isMlsUnique(mls);
         if(!isRealtorUnique && isPropertyUnique) {
             propertyLogImpl.add(property);
-            System.out.println("Property with mls number " + mls + " added");
+            System.out.println("\tProperty with mls number " + mls + " added");
         }
         else {
-            String errMsg = "Error, ";
+            String errMsg = "\t\tError, ";
             if(isRealtorUnique) {
                 errMsg += "non-existant realtor for this property. ";
             } else if(!isPropertyUnique) {
@@ -156,15 +181,35 @@ public class CS310Wilson {
         }
     }
     
+    /**
+     * Method to try to delete a property from the log
+     * @param mls, the property mls number
+     */
     public static void deleteProperty(int mls) {
         boolean isPropertyUnique = propertyLogImpl.isMlsUnique(mls);
         if(!isPropertyUnique) {
-            propertyLogImpl.remove(mls);
+            boolean removed = propertyLogImpl.remove(mls);
+            if(removed) {
+                System.out.println("\tProperty with mls " + mls + " removed");
+            } else {
+                System.out.println("\t\tError removing property with mls " +
+                        mls);
+            }
         }
         else {
-            System.out.println("Property with mls " + mls + " not found");
+            System.out.println("\t\tError, Property with mls " + mls + 
+                    " not found");
         }
     }
 
+    /**
+     * Method to generate a report from the PrintImpl class
+     */
+    public static void generateReport() {
+        PrintImpl printer = new PrintImpl(realtorLogImpl.getRealtorLog(),
+            propertyLogImpl.getPropertyArray(), 
+                propertyLogImpl.getNumProperties());
+        printer.generateReport();
+    }
     
 }

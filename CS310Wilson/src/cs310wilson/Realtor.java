@@ -9,9 +9,9 @@ import java.util.Objects;
 /** Realtor class, class object used to store data attributes about the specified realtor
  *
  * @author Chris Wilson
- * @version x Java Assn 1
+ * @version java assn 2
  */
-public class Realtor implements Comparable {
+public class Realtor {
     private String licenseNum;
     private String firstName;
     private String lastName;
@@ -244,19 +244,52 @@ public class Realtor implements Comparable {
         }
         // valid phone number in xxx-xxx-xxxx format with no strings inbetween the dashes
         return true;
-    }    
-
-    @Override
+    }
+    
+    /** Compare to method, to compare another realtor object against "this"
+     * If "this" is bigger than the ascii value of the other realtor object's
+     * license, it will return 1, if it's smaller, -1, and equals returns 0
+     * 
+     * @param o
+     * @return 
+     */
     public int compareTo(Object o) {
         Realtor obj = null;
+        String thisLicense = this.getLicenseNum();
+        String compareLicense = "";
+        int thisSum = 0;
+        int compareSum = 0;
         try {
             obj = (Realtor) o;
+            compareLicense = obj.getLicenseNum();
         }
         catch(ClassCastException e) {
             System.out.println("Error casting object to realtor");
+            return -1;
         }
-        String compareLicense = obj.getLicenseNum();
-        return this.getLicenseNum().compareTo(compareLicense);
+        int thisLength = thisLicense.length();
+        int compareLength = compareLicense.length();
+        
+        if(thisLength > compareLength) {
+            return 1;
+        }
+        else if(compareLength > thisLength) {
+            return -1;
+        }
+        for(int i = 0; i < thisLength; i++) {
+            thisSum += thisLicense.charAt(i);
+            compareSum += compareLicense.charAt(i);
+        }
+        if(thisSum > compareSum) {
+            return 1;
+        }
+        else if(compareSum > thisSum) {
+            return -1;
+        }
+        else if(compareSum == thisSum) {
+            return 0;
+        }
+        return -1;
     }    
     
 }

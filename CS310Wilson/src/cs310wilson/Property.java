@@ -8,7 +8,7 @@ import java.util.Objects;
 /** Property class object, accepts and stores data about a specific property 
  *
  * @author Chris Wilson
- * @version x Java Assn 1
+ * @version x Java Assn 2
  */
 public class Property {
     private int mls;
