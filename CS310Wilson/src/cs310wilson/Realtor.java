@@ -246,14 +246,14 @@ public class Realtor {
         return true;
     }
     
-    /** Compare to method, to compare another realtor object against "this"
+    /** Compare to license method, to compare another realtor object against "this"
      * If "this" is bigger than the ascii value of the other realtor object's
      * license, it will return 1, if it's smaller, -1, and equals returns 0
      * 
      * @param o
      * @return 
      */
-    public int compareTo(Object o) {
+    public int compareToLicense(Object o) {
         Realtor obj = null;
         String thisLicense = this.getLicenseNum();
         String compareLicense = "";
@@ -290,7 +290,9 @@ public class Realtor {
             return 0;
         }
         return -1;
-    }    
+    }
+
+    
     
 }
 

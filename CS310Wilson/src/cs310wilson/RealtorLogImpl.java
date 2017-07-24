@@ -1,5 +1,5 @@
 /*
- * Class for keeping track of the ArrayList of realtors and it's associated
+ * Class for keeping track of the Linked List of realtors and it's associated
  * functionality
  */
 package cs310wilson;
@@ -27,6 +27,10 @@ public class RealtorLogImpl {
         current = null;
         size = 0;
     }
+    
+    public int getSize() {
+        return size;
+    } 
 
     public boolean add(Realtor r) {
         current = head;
@@ -44,7 +48,7 @@ public class RealtorLogImpl {
             }
             current = head;
             while(current.getNext() != null) {
-                int weight = current.getNext().getRealtor().compareTo(r);
+                int weight = current.getNext().getRealtor().compareToLicense(r);
                 if(weight == -1) {
                     current = current.getNext();
                 }
@@ -68,9 +72,62 @@ public class RealtorLogImpl {
         return true;
     }
     
+    public boolean remove(Realtor r) {
+        if(size == 0) {
+            return false;
+        }        
+        current = head;
+        while(current.getNext() != null) {
+            if(current.getNext().getRealtor().equals(r)) {
+                if(size == 1) {
+                    head.setNext(null);
+                    size--;
+                    tail = head;
+                    return true;
+                }
+                else {
+                    if(current.getNext().getNext() == null) {
+                        current.setNext(null);
+                        size--;
+                        tail = current;
+                        return true;
+                    }
+                    else {
+                        current.setNext(current.getNext().getNext());
+                        tail = current.getNext();
+                        size--;
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    public boolean remove() {        
+        if(size == 0) {
+            return false;
+        }
+        else if(size == 1) {
+            head.setNext(null);
+            size--;
+            return true;
+        }
+        else {               
+        current = head;        
+        while(current.getNext().getNext() != null) {
+            current = current.getNext();
+        }        
+        current.setNext(null);
+        size--;
+        tail = current;
+        return true;
+        }
+    }
+    
     public boolean isNodeGreaterThanTail(RealtorNode r) {
         if(tail != null) {
-        int weight = tail.getRealtor().compareTo(r.getRealtor());
+        int weight = tail.getRealtor().compareToLicense(r.getRealtor());
         if(weight == -1 || weight == 0) {            
             return true;
         }
@@ -79,10 +136,17 @@ public class RealtorLogImpl {
     }
     
     public void traverseDisplay() {
+        System.out.println("Realtor Log:");
+        if(size == 0) {
+            System.out.println("\tEmpty log");
+        }
+        else {
         current = head;
-        for(int i = 0; i < size; i++) {
+        while(current.getNext() != null) {
             current = current.getNext();
-            System.out.println(current.toString());
+            System.out.println("\t" + current.toString());
+        }        
+        System.out.println();
         }
     }
     
@@ -90,13 +154,7 @@ public class RealtorLogImpl {
         head.setNext(null);
         tail = head;
         size = 0;        
-    }
-    
-    
-    public int getSize() {
-        return size;
-    }    
-    
+    }   
     
     /**
      * Method to check if a realtor license is in the list
@@ -104,8 +162,55 @@ public class RealtorLogImpl {
      * @return boolean value of success/failure
      */
     public boolean isLicenseUnique(String license) {
-        //TODO: iterate through list with a loop and get the license,
-        //  check for if exists
+        current = head;
+        if(size == 0) {
+            return true;
+        }
+        if(size == 1) {
+            if(tail.getRealtor().getLicenseNum().equals(license)) {
+                return false;
+            }
+        }
+        else {
+            while(current.getNext() != null) {                
+                current = current.getNext();
+                if(current.getRealtor().getLicenseNum().equals(license)) {
+                    return false;
+                }
+            }
+        }
         return true;
-    }   
+    }
+    
+    public boolean cleanUp() {
+        current = head;
+        if(size == 0) {
+            return true;
+        }
+        if(size == 1) {
+            if(!current.getNext().getRealtor().checkRealtorLicense()) {
+                this.clear();
+                return true;
+            }
+        }
+        else {
+            while(current.getNext() != null) {
+                if(!current.getNext().getRealtor().checkRealtorLicense()) {
+                    current.setNext(current.getNext().getNext());
+                    size--;
+                    if(current.getNext() == tail) {
+                        if(!current.getNext().getRealtor()
+                                .checkRealtorLicense()) {
+                            tail = current;
+                            size--;
+                            current.setNext(null);
+                            return true;
+                        }
+                    }                  
+                }
+                current = current.getNext();
+            }
+        }
+        return false;
+    }
 }

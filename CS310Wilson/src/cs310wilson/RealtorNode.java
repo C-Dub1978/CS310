@@ -47,7 +47,7 @@ public class RealtorNode {
     @Override
     public String toString() {
         return "Realtor: " + realtor.getLastName() + ", " + 
-               realtor.getFirstName() + "\n" + "License: " + 
+               realtor.getFirstName() + "\n\t" + "License: " + 
                realtor.getLicenseNum();        
     }
 }
