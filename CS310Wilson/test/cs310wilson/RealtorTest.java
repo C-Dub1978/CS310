@@ -140,14 +140,14 @@ public class RealtorTest {
         Realtor n6 = new Realtor();
         n6.setLicenseNum("AB123456789");
         
-        System.out.println("n2 compared to n1: " + n1.compareTo(n2));
-        System.out.println("n3 compared to n1: " + n1.compareTo(n3));
-        System.out.println("n1 compared to n2: " + n2.compareTo(n1));
-        System.out.println("n3 compared to n2: " + n2.compareTo(n3));
-        System.out.println("n4 compared to n1: " + n1.compareTo(n4));
-        System.out.println();
-        System.out.println("n5 compared to n1: " + n1.compareTo(n5));
-        System.out.println("n6 compared to n1: " + n1.compareTo(n6));
+//        System.out.println("n2 compared to n1: " + n1.compareTo(n2));
+//        System.out.println("n3 compared to n1: " + n1.compareTo(n3));
+//        System.out.println("n1 compared to n2: " + n2.compareTo(n1));
+//        System.out.println("n3 compared to n2: " + n2.compareTo(n3));
+//        System.out.println("n4 compared to n1: " + n1.compareTo(n4));
+//        System.out.println();
+//        System.out.println("n5 compared to n1: " + n1.compareTo(n5));
+//        System.out.println("n6 compared to n1: " + n1.compareTo(n6));
     }
     
 }

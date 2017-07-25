@@ -4,31 +4,37 @@
  */
 package cs310wilson;
 
+import java.util.LinkedList;
+import java.util.ListIterator;
+
 /**
  * PropertyLog class
  * @author Chris Wilson
  * @version java assn 2
  */
 public class PropertyLogImpl {
-    private Property[] propertyArray;
+    private LinkedList<Property> propertyList;
+    private ListIterator<Property> iterator;
     private int numProperties;
     private final int MAX_PROPERTIES;
+    
     
     /**
      * Constructor, default
      */
     public PropertyLogImpl() {
         MAX_PROPERTIES = 1000;
-        propertyArray = new Property[MAX_PROPERTIES];
-        numProperties = 0;
+        propertyList = new LinkedList<>();
+        iterator = propertyList.listIterator();
+        numProperties = propertyList.size();
     }
     
     /**
-     * Getter, gets the property array data field
+     * Getter, gets the property list data field
      * @return the data field
      */
-    public Property[] getPropertyArray() {
-        return propertyArray;
+    public LinkedList<Property> getPropertyArray() {
+        return propertyList;
     }
     
     /**
@@ -36,11 +42,11 @@ public class PropertyLogImpl {
      * @return the data field
      */
     public int getNumProperties() {
-        return numProperties;
+        return propertyList.size();
     }
     
     /**
-     * Method to add property to the array
+     * Method to add property to the list
      * @param obj, Property object to add
      * @return boolean value of success/failure
      */
@@ -48,33 +54,24 @@ public class PropertyLogImpl {
         if(numProperties == MAX_PROPERTIES) {
             return false;
         }
-        propertyArray[numProperties] = obj;
-        numProperties++;
+        propertyList.add(obj);
         return true;
     }
     
     /**
-     * Method to remove from the array
+     * Method to remove from the list
      * @param license, realtor license number associated with the property
      * @return boolean value of success/failure
      */
-    public boolean remove(String license) {        
-        boolean propertyExists = false;
-        for(int i = 0; i < propertyArray.length; i++) {
-            if(propertyArray[i] != null) {                
-                if(propertyArray[i].getRealtorLicenseNum().equals(license)) {
-                    System.out.println("\tProperty with mls " + 
-                            propertyArray[i].getMls() + " deleted");
-                    propertyArray[i] = null;
-                    propertyExists = true;
-                    numProperties--;
-                }
-            } 
-        }        
-        if(propertyExists) {
-            return true;
+    public boolean remove(String license) {
+        boolean licenseExists = false;
+        while(iterator.hasNext()) {
+            if(iterator.next().getRealtorLicenseNum().equals(license)) {
+                propertyList.remove(iterator.next());
+                licenseExists = true;
+            }
         }
-        return false;
+        return licenseExists;
     }
     
     /**
@@ -82,23 +79,15 @@ public class PropertyLogImpl {
      * @param mlsNum, the property mls number
      * @return boolean value of success/failure
      */
-    public boolean remove(int mlsNum) {        
-        boolean propertyRemoved = false;
-        for(int i = 0; i < propertyArray.length; i++) {
-            if(propertyArray[i] != null) {
-                if(propertyArray[i].getMls() == mlsNum) {
-                    System.out.println("\tProperty with mls " +
-                            propertyArray[i].getMls() + " deleted");
-                    propertyArray[i] = null;
-                    propertyRemoved = true;
-                    numProperties--;
-                }
-            }            
+    public boolean remove(int mlsNum) {
+        boolean mlsExists = false;        
+        while(iterator.hasNext()) {
+            if(iterator.next().getMls() == mlsNum) {
+                propertyList.remove(iterator.next());
+                mlsExists = true;
+            }
         }
-        if(propertyRemoved) {
-            return true;
-        }
-        return false;
+        return mlsExists;
     }
     
     /**
@@ -107,16 +96,16 @@ public class PropertyLogImpl {
      * @return boolean value of uniqueness
      */
     public boolean isMlsUnique(int mlsNum) {
-        if(propertyArray.length == 0) {
-            return true;
+        boolean unique = true;
+        if(numProperties == 0) {
+            return unique;
         }
-        // TODO change this to binary search to help time complexity
-        for(int i = 0; i < numProperties; i++) {
-            if(mlsNum == propertyArray[i].getMls()) {
-                return false;
+        while(iterator.hasNext()) {
+            if(iterator.next().getMls() == mlsNum) {
+                unique = false;
             }
         }
-        return true;
+        return unique;
     } 
     
     /**
@@ -126,8 +115,8 @@ public class PropertyLogImpl {
      */
     public int numberOfProperties(String license) {
         int count = 0;
-        for(int i = 0; i < numProperties; i++) {
-            if(propertyArray[i].getRealtorLicenseNum().equals(license)) {
+        while(iterator.hasNext()) {
+            if(iterator.next().getRealtorLicenseNum().equals(license)) {
                 count++;
             }
         }
@@ -140,10 +129,8 @@ public class PropertyLogImpl {
      */
     public double totalPropertyValue() {
         double total = 0.0;
-        for(int i = 0; i < numProperties; i++) {
-            if(propertyArray[i] != null) {
-            total += propertyArray[i].getAskingPrice();
-            }
+        while(iterator.hasNext()) {
+            total += iterator.next().getAskingPrice();
         }
         return total;
     }
@@ -155,12 +142,25 @@ public class PropertyLogImpl {
      */
     public double totalPropertyValue(String license) {
         double total = 0.0;
-        for(int i = 0; i < numProperties; i++) {
-            if(propertyArray[i].getRealtorLicenseNum().equals(license)) {
-                total += propertyArray[i].getAskingPrice();
+        while(iterator.hasNext()) {
+            if(iterator.next().getRealtorLicenseNum().equals(license)) {
+                total += iterator.next().getAskingPrice();
             }
         }
         return total;
-    }   
+    }
+    
+    public void traverseDisplay() {
+        System.out.println("Property log: ");
+        if(propertyList.isEmpty()) {
+            System.out.println("\tEmpty log");
+        }
+        else {
+            while(iterator.hasNext()) {
+                System.out.println("\t" + iterator.next().toString());
+            }
+        }
+        System.out.println();
+    }
     
 }

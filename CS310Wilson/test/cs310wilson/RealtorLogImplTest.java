@@ -14,11 +14,7 @@ import static org.junit.Assert.*;
  *
  * @author klown
  */
-public class RealtorLogImplTest {
-    RealtorNode n1;
-    RealtorNode n2;
-    RealtorNode n3;
-    RealtorNode n4;
+public class RealtorLogImplTest {    
     Realtor r1;
     Realtor r2;
     Realtor r3;
@@ -160,6 +156,22 @@ public class RealtorLogImplTest {
         assertEquals(3, log.getSize());
         log.add(r4);
         assertEquals(4, log.getSize());
-    }  
+    }
+    
+    @Test
+    public void testCleanUp() {
+        r1.setLicenseNum("AA1234567");
+        r2.setLicenseNum("AB12");
+        r3.setLicenseNum("FF1234567");
+        r4.setLicenseNum("ZZ123");
+        log.add(r1);
+        log.add(r2);
+        log.add(r3);
+        log.add(r4);
+        log.traverseDisplay();
+        assertEquals(4, log.getSize());
+        log.cleanUp();
+        log.traverseDisplay();
+    }
     
 }

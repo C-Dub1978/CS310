@@ -104,6 +104,38 @@ public class RealtorLogImpl {
         return false;
     }
     
+    public boolean remove(String license) {
+        if(size == 0) {
+            return false;
+        }        
+        current = head;
+        while(current.getNext() != null) {
+            if(current.getNext().getRealtor().getLicenseNum().equals(license)) {
+                if(size == 1) {
+                    head.setNext(null);
+                    size--;
+                    tail = head;
+                    return true;
+                }
+                else {
+                    if(current.getNext().getNext() == null) {
+                        current.setNext(null);
+                        size--;
+                        tail = current;
+                        return true;
+                    }
+                    else {
+                        current.setNext(current.getNext().getNext());
+                        tail = current.getNext();
+                        size--;
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
     public boolean remove() {        
         if(size == 0) {
             return false;
@@ -182,35 +214,36 @@ public class RealtorLogImpl {
         return true;
     }
     
-    public boolean cleanUp() {
-        current = head;
+    public boolean cleanUp() {        
+        current = head;        
         if(size == 0) {
-            return true;
+            return false;
         }
-        if(size == 1) {
+        else if(size == 1) {
             if(!current.getNext().getRealtor().checkRealtorLicense()) {
                 this.clear();
                 return true;
             }
         }
         else {
-            while(current.getNext() != null) {
+            while(current.getNext() != null) {                
                 if(!current.getNext().getRealtor().checkRealtorLicense()) {
-                    current.setNext(current.getNext().getNext());
-                    size--;
-                    if(current.getNext() == tail) {
-                        if(!current.getNext().getRealtor()
-                                .checkRealtorLicense()) {
-                            tail = current;
-                            size--;
-                            current.setNext(null);
-                            return true;
-                        }
-                    }                  
+                    if(current.getNext().getNext() != null) {
+                        current.setNext(current.getNext().getNext());
+                        size--;                        
+                    }
+                    else {
+                        current.setNext(null);
+                        size--;
+                        tail = current;
+                    }
                 }
-                current = current.getNext();
+                else {
+                    current = current.getNext();
+                }
             }
+            
         }
-        return false;
+        return true;
     }
 }
