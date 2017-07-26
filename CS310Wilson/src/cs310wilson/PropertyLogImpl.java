@@ -31,7 +31,7 @@ public class PropertyLogImpl {
      * Getter, gets the property list data field
      * @return the data field
      */
-    public LinkedList<Property> getPropertyArray() {
+    public LinkedList<Property> getPropertyLog() {
         return propertyList;
     }
     

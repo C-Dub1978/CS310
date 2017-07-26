@@ -18,6 +18,8 @@ import java.util.Scanner;
 public class CS310Wilson {
     static RealtorLogImpl realtorLogImpl = new RealtorLogImpl();
     static PropertyLogImpl propertyLogImpl = new PropertyLogImpl();
+    static final String DIRTY_OUTPUT_FILENAME = "output/assn3initialReport.txt";
+    static final String CLEAN_OUTPUT_FILENAME = "output/assn3cleanReport.txt";
     
     /**
      * Main method, entry to program, calls method to process data then
@@ -26,7 +28,10 @@ public class CS310Wilson {
      */
     public static void main(String[] args) {        
         processDataFile();
-        generateReport();
+        generateReport(DIRTY_OUTPUT_FILENAME);
+        realtorLogImpl.cleanUp();
+        propertyLogImpl.cleanUp();
+        generateReport(CLEAN_OUTPUT_FILENAME);
     }    
     
     /**
@@ -74,7 +79,7 @@ public class CS310Wilson {
                 System.out.println("\tNeither realtor, nor property in first"
                         + " token");
             }
-        }
+        }        
     }
     
     /**
@@ -204,12 +209,14 @@ public class CS310Wilson {
 
     /**
      * Method to generate a report from the PrintImpl class
+     * 
+     * @param filename, name of the output file name
      */
-    public static void generateReport() {
-        PrintImpl printer = new PrintImpl(realtorLogImpl.getRealtorLog(),
-            propertyLogImpl.getPropertyArray(), 
-                propertyLogImpl.getNumProperties());
-        printer.generateReport();
+    public static void generateReport(String filename) {
+        PrintImpl printer = new PrintImpl(realtorLogImpl,
+            propertyLogImpl.getPropertyLog(), 
+                propertyLogImpl.size());
+        printer.generateReport(filename);        
     }
     
 }

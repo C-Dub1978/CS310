@@ -246,4 +246,13 @@ public class RealtorLogImpl {
         }
         return true;
     }
+    
+    public Realtor getRealtor(int index) {        
+        current = head;
+        int count = -1;
+        for(int i = count; i < index; i++) {
+            current = current.getNext();
+        }
+        return current.getRealtor();        
+    }
 }

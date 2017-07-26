@@ -174,4 +174,40 @@ public class RealtorLogImplTest {
         log.traverseDisplay();
     }
     
+    @Test
+    public void getRealtor() {
+        log.add(r1);
+        log.add(r2);
+        log.add(r3);
+        log.add(r4);
+        
+        Realtor r1Clone = new Realtor();
+        Realtor r2Clone = new Realtor();
+        Realtor r3Clone = new Realtor();
+        Realtor r4Clone = new Realtor();
+        r1Clone.setLicenseNum("AB1234567");
+        r1Clone.setFirstName("Chris");
+        r1Clone.setLastName("Chelios");
+        r2Clone.setLicenseNum("FF1234567");
+        r2Clone.setFirstName("Jane");
+        r2Clone.setLastName("Doe");
+        r3Clone.setLicenseNum("MX1234567");
+        r3Clone.setFirstName("Keith");
+        r3Clone.setLastName("Munoz");
+        r4Clone.setLicenseNum("ZZ1234567");
+        r4Clone.setFirstName("Aldon");
+        r4Clone.setLastName("Alduson");
+        
+        Realtor test1 = log.getRealtor(0);
+        Realtor test2 = log.getRealtor(1);
+        Realtor test3 = log.getRealtor(2);
+        Realtor test4 = log.getRealtor(3);
+        assertEquals(true, test1.equals(r1Clone));
+        assertEquals(false, test1.equals(r2Clone));
+        assertEquals(true, test2.equals(r2Clone));
+        assertEquals(false, test2.equals(r1Clone));
+        assertEquals(true, test3.equals(r3Clone));
+        assertEquals(true, test4.equals(r4Clone));
+    }
+    
 }
