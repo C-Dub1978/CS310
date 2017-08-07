@@ -4,8 +4,7 @@
  */
 package cs310wilson;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Realtor log class
@@ -13,246 +12,161 @@ import java.util.Collections;
  * @version java assn 2
  */
 public class RealtorLogImpl {
-    private RealtorNode head;
-    private RealtorNode tail;
-    private RealtorNode current;
+    private Realtor[] hashTable;
+    private final int TABLE_MAXIMUM_SIZE;
+    private final int TABLE_BOUNDARY;
     private int size;
+    private int current;
     
     /**
      * Default constructor
      */
     public RealtorLogImpl() {
-        head = new RealtorNode();        
-        tail = head;
-        current = null;
+        TABLE_MAXIMUM_SIZE = 23;
+        TABLE_BOUNDARY = TABLE_MAXIMUM_SIZE - 1;
+        hashTable = new Realtor[TABLE_MAXIMUM_SIZE];        
         size = 0;
+        current = 0;
     }
     
-    public int getSize() {
-        return size;
-    } 
-
     public boolean add(Realtor r) {
-        current = head;
-        RealtorNode n = new RealtorNode(r);
-        if(size == 0) {
-            head.setNext(n);
-            tail = n;
+        if(size == TABLE_BOUNDARY) {
+            System.out.println("Error, hash table is full and no " + 
+                    " chaining is implemented!");
+            System.out.println("Realtor " + r.getLicenseNum() + " not" +
+                    " added");
+            return false;
+        }
+        int index = createHashFromLicense(r.getLicenseNum());
+        boolean added = false;
+        System.out.println("Hash index created : " + index);
+        if(hashTable[index] == null && index != TABLE_BOUNDARY) {
+            hashTable[index] = r;
+            System.out.println("Added realtor " + r.getLicenseNum() +
+                    ", " + r.getFirstName() + " " + r.getLastName());
+            added = true;
             size++;
-            return true;
+        }
+        else {            
+            added = rehash(r, index);
+            if(added) {
+                size++;
+                System.out.println("Added realtor " + r.getLicenseNum() +
+                    ", " + r.getFirstName() + " " + r.getLastName());
+            }
+        }
+        return added;
+    }    
+        
+    
+    public boolean isEmpty() {
+        return size == 0;
+    }
+    
+    public int size() {
+        return size;
+    }
+
+    public int createHashFromLicense(String license) {
+        int total = 0;
+        byte[] licenseToBytes = null;
+        try {
+        licenseToBytes = license.getBytes("US-ASCII");
+        }
+        catch(UnsupportedEncodingException e) {
+            System.out.println("Error encoding license to ASCII bytes");
+        }
+        for(int i = 0; i < license.length(); i++) {
+            total += licenseToBytes[i];
         }        
-        else if(size > 0) {
-            if(isNodeGreaterThanTail(n)) {
-                addToTail(r);
+        return total % TABLE_MAXIMUM_SIZE;
+    }
+    
+    public boolean rehash(Realtor r, int startIndex) {
+        System.out.println("Called rehash on index " + startIndex);
+        if(startIndex == TABLE_BOUNDARY - 1 || startIndex == TABLE_BOUNDARY) {
+            current = 0;
+        }
+        else {
+            current = startIndex + 1;
+        }        
+        boolean added = false;
+        while(!added && current != startIndex) {
+            if(hashTable[current] == null) {
+                hashTable[current] = r;
+                size++;
+                added = true;                
                 return true;
             }
-            current = head;
-            while(current.getNext() != null) {
-                int weight = current.getNext().getRealtor().compareToLicense(r);
-                if(weight == -1) {
-                    current = current.getNext();
+            else {
+                current++;
+                if(current == TABLE_MAXIMUM_SIZE) {
+                    current = 0;
                 }
-                else if(weight >= 0) {
-                    RealtorNode temp = current.getNext();
-                    current.setNext(n);
-                    n.setNext(temp);                    
-                    size++;
-                    return true;
-                }                
             }
-        }
+        }        
         return false;
     }
     
-    public boolean addToTail(Realtor r) {
-        RealtorNode n = new RealtorNode(r);
-        tail.setNext(n);
-        tail = n;
-        size++;
-        return true;
-    }
-    
-    public boolean remove(Realtor r) {
-        if(size == 0) {
-            return false;
-        }        
-        current = head;
-        while(current.getNext() != null) {
-            if(current.getNext().getRealtor().equals(r)) {
-                if(size == 1) {
-                    head.setNext(null);
-                    size--;
-                    tail = head;
-                    return true;
+    public Realtor find(Realtor r) {       
+        int key = createHashFromLicense(r.getLicenseNum());        
+        boolean found = false;
+        if(key >= TABLE_BOUNDARY) {
+            current = 0;
+        }
+        else {
+            current = key;
+            if(hashTable[current] != null) {
+                if(hashTable[current].equals(r)) {
+                    System.out.println("Realtor " + r.getLicenseNum()
+                                + " " + r.getFirstName() + " found at index " + current);
+                    return hashTable[current];
                 }
                 else {
-                    if(current.getNext().getNext() == null) {
-                        current.setNext(null);
-                        size--;
-                        tail = current;
-                        return true;
+                    current = key + 1;
+                }
+            }
+            else {
+                current = key + 1;
+            }            
+        }        
+        while(!found && current != key) {            
+            if(current == TABLE_BOUNDARY) {
+                current = 0;
+            }
+            else {
+                if(hashTable[current] != null) {
+                    if(hashTable[current].equals(r)) {
+                        found = true;
+                        System.out.println("Realtor " + r.getLicenseNum()
+                                + " " + r.getFirstName() + " found at index " + current);
+                        return hashTable[current];
                     }
                     else {
-                        current.setNext(current.getNext().getNext());
-                        tail = current.getNext();
-                        size--;
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-    
-    public boolean remove(String license) {
-        if(size == 0) {
-            return false;
-        }        
-        current = head;
-        while(current.getNext() != null) {
-            if(current.getNext().getRealtor().getLicenseNum().equals(license)) {
-                if(size == 1) {
-                    head.setNext(null);
-                    size--;
-                    tail = head;
-                    return true;
-                }
-                else {
-                    if(current.getNext().getNext() == null) {
-                        current.setNext(null);
-                        size--;
-                        tail = current;
-                        return true;
-                    }
-                    else {
-                        current.setNext(current.getNext().getNext());
-                        tail = current.getNext();
-                        size--;
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-    
-    public boolean remove() {        
-        if(size == 0) {
-            return false;
-        }
-        else if(size == 1) {
-            head.setNext(null);
-            size--;
-            return true;
-        }
-        else {               
-        current = head;        
-        while(current.getNext().getNext() != null) {
-            current = current.getNext();
-        }        
-        current.setNext(null);
-        size--;
-        tail = current;
-        return true;
-        }
-    }
-    
-    public boolean isNodeGreaterThanTail(RealtorNode r) {
-        if(tail != null) {
-        int weight = tail.getRealtor().compareToLicense(r.getRealtor());
-        if(weight == -1 || weight == 0) {            
-            return true;
-        }
-        }
-        return false;
-    }
-    
-    public void traverseDisplay() {
-        System.out.println("Realtor Log:");
-        if(size == 0) {
-            System.out.println("\tEmpty log");
-        }
-        else {
-        current = head;
-        while(current.getNext() != null) {
-            current = current.getNext();
-            System.out.println("\t" + current.toString());
-        }        
-        System.out.println();
-        }
-    }
-    
-    public void clear() {
-        head.setNext(null);
-        tail = head;
-        size = 0;        
-    }   
-    
-    /**
-     * Method to check if a realtor license is in the list
-     * @param license, realtor license to check for
-     * @return boolean value of success/failure
-     */
-    public boolean isLicenseUnique(String license) {
-        current = head;
-        if(size == 0) {
-            return true;
-        }
-        if(size == 1) {
-            if(tail.getRealtor().getLicenseNum().equals(license)) {
-                return false;
-            }
-        }
-        else {
-            while(current.getNext() != null) {                
-                current = current.getNext();
-                if(current.getRealtor().getLicenseNum().equals(license)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-    
-    public boolean cleanUp() {        
-        current = head;        
-        if(size == 0) {
-            return false;
-        }
-        else if(size == 1) {
-            if(!current.getNext().getRealtor().checkRealtorLicense()) {
-                this.clear();
-                return true;
-            }
-        }
-        else {
-            while(current.getNext() != null) {                
-                if(!current.getNext().getRealtor().checkRealtorLicense()) {
-                    if(current.getNext().getNext() != null) {
-                        current.setNext(current.getNext().getNext());
-                        size--;                        
-                    }
-                    else {
-                        current.setNext(null);
-                        size--;
-                        tail = current;
+                        current++;
                     }
                 }
                 else {
-                    current = current.getNext();
+                    current++;
                 }
             }
-            
         }
-        return true;
+        System.out.println("Realtor " + r.getLicenseNum() + " not found");
+        return null;
     }
     
-    public Realtor getRealtor(int index) {        
-        current = head;
-        int count = -1;
-        for(int i = count; i < index; i++) {
-            current = current.getNext();
+    public void displayHash() {
+        System.out.println("Realtor Hash Table:");
+        for(int i = 0; i < TABLE_MAXIMUM_SIZE; i++) {
+            String index = hashTable[i] == null ? "is empty" :
+                    "contains Realtor " + hashTable[i].getLicenseNum() + 
+                    ", " + hashTable[i].getFirstName() + 
+                    " " + hashTable[i].getLastName();
+            System.out.println("\tIndex " + i + " " + index);
         }
-        return current.getRealtor();        
+    }
+
+    public Realtor[] getTable() {
+        return hashTable;
     }
 }

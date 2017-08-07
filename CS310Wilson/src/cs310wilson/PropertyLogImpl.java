@@ -4,9 +4,8 @@
  */
 package cs310wilson;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.ListIterator;
+import java.util.HashMap;
+
 
 /**
  * PropertyLog class
@@ -14,175 +13,122 @@ import java.util.ListIterator;
  * @version java assn 2
  */
 public class PropertyLogImpl {
-    private LinkedList<Property> propertyList;    
-    private int numProperties;
-    private final int MAX_PROPERTIES;
-    
+    private HashMap<Integer, MapEntry> map;
+    private final int MAP_MAXIMUM_SIZE;
+    private int current;
     
     /**
      * Constructor, default
      */
     public PropertyLogImpl() {
-        MAX_PROPERTIES = 1000;
-        propertyList = new LinkedList<>();        
+          MAP_MAXIMUM_SIZE = 17;          
+          map = new HashMap(MAP_MAXIMUM_SIZE);
+          current = 0;
     }
     
-    /**
-     * Getter, gets the property list data field
-     * @return the data field
-     */
-    public LinkedList<Property> getPropertyLog() {
-        return propertyList;
+    public int createHashFromMls(int mls) {
+        return mls % MAP_MAXIMUM_SIZE;
     }
     
-    
-    /**
-     * Getter, gets the number of properties
-     * @return the data field
-     */
-    public int size() {
-        return propertyList.size();
-    }
-    
-    /**
-     * Method to add property to the list
-     * @param obj, Property object to add
-     * @return boolean value of success/failure
-     */
-    public boolean add(Property obj) {
-        if(numProperties == MAX_PROPERTIES) {
-            return false;
-        }
-        propertyList.add(obj);
-        return true;
-    }
-    
-    /**
-     * Method to remove from the list
-     * @param license, realtor license number associated with the property
-     * @return boolean value of success/failure
-     */
-    public boolean remove(String license) {
-        ListIterator<Property> iterator = propertyList.listIterator();
-        boolean licenseExists = false;
-        while(iterator.hasNext()) {
-            if(iterator.next().getRealtorLicenseNum().equals(license)) {
-                propertyList.remove(iterator.next());
-                licenseExists = true;
-            }
-        }
-        return licenseExists;
-    }
-    
-    /**
-     * Overloaded remove method
-     * @param mlsNum, the property mls number
-     * @return boolean value of success/failure
-     */
-    public boolean remove(int mlsNum) {
-        ListIterator<Property> iterator = propertyList.listIterator();
-        boolean mlsExists = false;        
-        while(iterator.hasNext()) {
-            if(iterator.next().getMls() == mlsNum) {
-                propertyList.remove(iterator.next());
-                mlsExists = true;
-            }
-        }
-        return mlsExists;
-    }
-    
-    /**
-     * Method to see if mls is in the array
-     * @param mlsNum, the property mls number
-     * @return boolean value of uniqueness
-     */
-    public boolean isMlsUnique(int mlsNum) {
-        ListIterator<Property> iterator = propertyList.listIterator();
-        boolean unique = true;
-        if(numProperties == 0) {
-            return unique;
-        }
-        while(iterator.hasNext()) {
-            if(iterator.next().getMls() == mlsNum) {
-                unique = false;
-            }
-        }
-        return unique;
-    } 
-    
-    /**
-     * Method to get number of properties for a realtor
-     * @param license, the realtor license number
-     * @return count, number of properties associated with that realtor
-     */
-    public int numberOfProperties(String license) {
-        ListIterator<Property> iterator = propertyList.listIterator();
-        int count = 0;
-        while(iterator.hasNext()) {
-            if(iterator.next().getRealtorLicenseNum().equals(license)) {
-                count++;
-            }
-        }
-        return count;
-    }
-    
-    /**
-     * Method to get total property value of all
-     * @return total, the total value of all properties
-     */
-    public double totalPropertyValue() {
-        ListIterator<Property> iterator = propertyList.listIterator();
-        double total = 0.0;
-        while(iterator.hasNext()) {
-            total += iterator.next().getAskingPrice();
-        }
-        return total;
-    }
-    
-    /**
-     * Method to get all property values from a realtor
-     * @param license, the realtor license number
-     * @return total, total value for that realtor
-     */
-    public double totalPropertyValue(String license) {
-        ListIterator<Property> iterator = propertyList.listIterator();
-        double total = 0.0;
-        while(iterator.hasNext()) {
-            if(iterator.next().getRealtorLicenseNum().equals(license)) {
-                total += iterator.next().getAskingPrice();
-            }
-        }
-        return total;
-    }
-    
-    public void traverseDisplay() {
-        ListIterator<Property> iterator = propertyList.listIterator();
-        System.out.println("Property log: ");
-        if(propertyList.isEmpty()) {
-            System.out.println("\tEmpty log");
+    public boolean add(Property p) {
+        boolean added = false;
+        MapEntry newEntry;
+        PropertyNode newNode = new PropertyNode();
+        newNode.setProperty(p);
+        int key = createHashFromMls(p.getMls());
+        boolean containsEntry = map.containsKey(key);
+        if(containsEntry) {
+            MapEntry oldEntry = map.get(key);
+            PropertyNode oldNode = oldEntry.getPropertyNode();
+            oldNode = linkNodes(oldNode, newNode);
+            oldEntry.setPropertyNode(oldNode);
+            map.replace(key, oldEntry);
+            added = true;
         }
         else {
-            while(iterator.hasNext()) {
-                System.out.println("\t" + iterator.next().toString() + "\n");
+            newEntry = new MapEntry(key, newNode);
+            map.put(key, newEntry);
+            added = true;
+        }
+        return added;
+    }
+
+    public Property find(int mls) {
+        int key = createHashFromMls(mls);  
+        boolean found = false;
+        PropertyNode walkNode = null;
+        if(map.get(key) != null) {
+            MapEntry m = map.get(key);
+            PropertyNode p = m.getPropertyNode();
+            if(p.getProperty().getMls() == mls) {
+                System.out.println("Property " + p.getProperty().
+                        getMls() + " found at index: " + key);
+                return p.getProperty();
+            }
+            else {
+                if(p.hasNext()) {
+                    while(p.getNext() != null && !found) {
+                        walkNode = p.getNext();
+                        if(walkNode.getProperty().getMls() == mls) {
+                            found = true;
+                            System.out.println("Property " + walkNode.
+                                    getProperty().getMls() + " found at " +
+                                    "index " + key);
+                            return walkNode.getProperty();
+                        }
+                    }
+                }
+                else {
+                    System.out.println("Property " + mls + " not found");
+                }
             }
         }
-        System.out.println();
+        return null;
     }
     
-    public boolean cleanUp() {        
-        boolean removed = false;        
-        ListIterator<Property> iterator = propertyList.listIterator();
-        while(iterator.hasNext()) {
-            if(!iterator.next().checkMlsNum()) {
-                iterator.remove();
-                removed = true;                
+    public PropertyNode linkNodes(PropertyNode p, PropertyNode addNode) {
+        PropertyNode currentNode = p;        
+        if(p.getNext() == null) {
+            p.setNext(addNode);
+            return p;
+        }
+        else {
+            System.out.println("Running through linking loop");
+            while(currentNode.getNext() != null) {
+                currentNode = p.getNext();
+            }
+            currentNode.setNext(addNode);
+        }
+        return p;
+    }
+    
+    public void displayHash() {
+        System.out.println("Property Hash Table:");
+        for(int i = 0; i < MAP_MAXIMUM_SIZE; i++) {
+            System.out.print("\tIndex " + i + ": ");            
+            MapEntry entry = map.get(i);
+            if(entry == null) {
+                System.out.println("is empty");
+            } else {
+                PropertyNode node = entry.getPropertyNode();
+                if(node.getNext() == null) {
+                    System.out.println("contains Properties " + node.getProperty()
+                    .getMls());
+                }
+                else {
+                    
+                   StringBuilder str = new StringBuilder("");
+                   str.append(node.getProperty().getMls());
+                   PropertyNode currentNode = node;
+                   while(currentNode.getNext() != null) {                       
+                       currentNode = currentNode.getNext();
+                       str.append(" ");
+                       str.append(currentNode.getProperty().getMls());
+                   }
+                    System.out.println("Contains Properties " + 
+                            str.toString());
+                }
             }
         }
-        return removed;
-    }
-    
-    public void clearList() {
-        propertyList.clear();
-    }
-    
+    }    
 }
