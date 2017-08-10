@@ -1,5 +1,5 @@
 /*
- * This class is used to keep an array of all properties for all realtors,
+ * This class is used to keep a hash map of all properties for all realtors,
  * and has some getters/setters and methods to access data
  */
 package cs310wilson;
@@ -10,7 +10,7 @@ import java.util.HashMap;
 /**
  * PropertyLog class
  * @author Chris Wilson
- * @version java assn 2
+ * @version java assn 5
  */
 public class PropertyLogImpl {
     private HashMap<Integer, MapEntry> map;
@@ -26,10 +26,20 @@ public class PropertyLogImpl {
           current = 0;
     }
     
+    /** Method to create hash key from mls number
+     *
+     * @param mls, the property mls number
+     * @return the key
+     */
     public int createHashFromMls(int mls) {
         return mls % MAP_MAXIMUM_SIZE;
     }
     
+    /** Method to add property to hash map
+     *
+     * @param p, the property object to add
+     * @return boolean value of operation
+     */
     public boolean add(Property p) {
         boolean added = false;
         MapEntry newEntry;
@@ -53,6 +63,11 @@ public class PropertyLogImpl {
         return added;
     }
 
+    /** Method to find a property
+     *
+     * @param mls, the mls number of property
+     * @return the property object, if found, or null
+     */
     public Property find(int mls) {
         int key = createHashFromMls(mls);  
         boolean found = false;
@@ -60,9 +75,7 @@ public class PropertyLogImpl {
         if(map.get(key) != null) {
             MapEntry m = map.get(key);
             PropertyNode p = m.getPropertyNode();
-            if(p.getProperty().getMls() == mls) {
-                System.out.println("Property " + p.getProperty().
-                        getMls() + " found at index: " + key);
+            if(p.getProperty().getMls() == mls) {                
                 return p.getProperty();
             }
             else {
@@ -70,10 +83,7 @@ public class PropertyLogImpl {
                     while(p.getNext() != null && !found) {
                         walkNode = p.getNext();
                         if(walkNode.getProperty().getMls() == mls) {
-                            found = true;
-                            System.out.println("Property " + walkNode.
-                                    getProperty().getMls() + " found at " +
-                                    "index " + key);
+                            found = true;                            
                             return walkNode.getProperty();
                         }
                     }
@@ -86,14 +96,19 @@ public class PropertyLogImpl {
         return null;
     }
     
+    /** Method to add properties to a linked list if collisions occur
+     *
+     * @param p, the property node to link to
+     * @param addNode, the new node to link to the above node
+     * @return the original property node with new links
+     */
     public PropertyNode linkNodes(PropertyNode p, PropertyNode addNode) {
         PropertyNode currentNode = p;        
         if(p.getNext() == null) {
             p.setNext(addNode);
             return p;
         }
-        else {
-            System.out.println("Running through linking loop");
+        else {            
             while(currentNode.getNext() != null) {
                 currentNode = p.getNext();
             }
@@ -102,6 +117,9 @@ public class PropertyLogImpl {
         return p;
     }
     
+    /** Method to display the hash map
+     *
+     */
     public void displayHash() {
         System.out.println("Property Hash Table:");
         for(int i = 0; i < MAP_MAXIMUM_SIZE; i++) {

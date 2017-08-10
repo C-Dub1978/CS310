@@ -131,11 +131,9 @@ public class RealtorLogImplTest {
         r.add(lonnie);       
         r.add(leslie);
         r.displayHash();
-        r.find(leslie);
-        r.find(bob);
-        r.find(dylan);
-        r.find(carl);
-        r.find(johnDoe);
+        assertEquals(bob, r.find("BB2222222"));
+        assertEquals(dylan, r.find("B2222222B"));
+        assertEquals(carl, r.find("CC3333333"));
     }
 
     

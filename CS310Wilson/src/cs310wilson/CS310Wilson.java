@@ -13,7 +13,7 @@ import java.util.Scanner;
 /** Main Class, reads the data from the specified file and builds objects with the data
  * 
  * @author Chris Wilson
- * @version x Java Assn 2
+ * @version x Java Assn 5
  */
 public class CS310Wilson {
     static RealtorLogImpl realtorLogImpl = new RealtorLogImpl();
@@ -30,6 +30,7 @@ public class CS310Wilson {
         realtorLogImpl.displayHash();
         System.out.println("");
         propertyLogImpl.displayHash();
+        generateReport(REQUESTS_FILE);
     }    
     
     /**
@@ -88,10 +89,9 @@ public class CS310Wilson {
     public static void addRealtor(String[] attribs) {           
         double commission = Double.parseDouble(attribs[6]);
         Realtor realtor = new Realtor(attribs[2], attribs[3], attribs[4],
-        attribs[5], commission);
+        attribs[5], commission);        
         String added = realtorLogImpl.add(realtor) ? "added" : "not added";
-        System.out.println("Realtor " + added);
-        
+        System.out.println("Realtor " + added);        
     }    
     
     
@@ -126,7 +126,8 @@ public class CS310Wilson {
      * @param filename, name of the output file name
      */
     public static void generateReport(String filename) {
-            
+            PrintImpl printer = new PrintImpl(realtorLogImpl, propertyLogImpl);
+            printer.generateReport(filename);
     }
     
 }
