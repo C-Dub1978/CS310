@@ -15,19 +15,10 @@ import static org.junit.Assert.*;
  * @author klown
  */
 public class PropertyLogImplTest {
-    PropertyLogImpl p;
-    Property p1;
-    Property p2;
-    Property p3;
+    PropertyLogImpl log;
     
     public PropertyLogImplTest() {
-        p = new PropertyLogImpl();
-        p1 = new Property(1234567, "AA1111111", "12 big wok way", "denver", "CO",
-        80221, 2, 2.5, true, 350000);
-        p2 = new Property(1324565, "AB1111111", "34 haight st.", "denver", "CO",
-        80229, 3, 3.5, true, 290000);
-        p3 = new Property(1111111, "AZ1111111", "434 hello world rd", "denver",
-        "CO", 80520, 3, 3, false, 3333333);
+        log = new PropertyLogImpl();
     }
     
     @Before
@@ -39,38 +30,28 @@ public class PropertyLogImplTest {
     }
 
     /**
-     * Test of createHashFromMls method, of class PropertyLogImpl.
-     */
-    @Test
-    public void testCreateHashFromMls() {
-    }
-
-    /**
      * Test of add method, of class PropertyLogImpl.
      */
     @Test
     public void testAdd() {
-        p.add(p1);
-        p.displayHash();
-        p.add(p2);
-        p.displayHash();
-        p.add(p3);
-        Property prop = p.find(1324565);
-        
+        Property p1 = new Property(12345, "AA123", "12 Main St.", "Denver", "CO", 80229, 3, 3.5, false, 350000);
+        Property p2 = new Property(89008, "BB123", "12 East St.", "Denver", "CO", 80229, 3, 3.5, false, 357000);
+        Property p3 = new Property(11132, "CC123", "15 None St.", "Denver", "CO", 80229, 3, 3.5, false, 250000);
+        Property p4 = new Property(99901, "DD123", "44 Walter St.", "Denver", "CO", 80229, 3, 3.5, false, 550000);
+        Property p5 = new Property(7895678, "CC123", "1555 Deleware St.", "Denver", "CO", 80229, 3, 3.5, false, 450000);
+        log.add(p1);
+        log.add(p2);
+        log.add(p3);
+        log.add(p4);
+        log.add(p5);
+        log.traverseDisplay();
     }
 
     /**
-     * Test of linkNodes method, of class PropertyLogImpl.
+     * Test of find method, of class PropertyLogImpl.
      */
     @Test
-    public void testLinkNodes() {
-    }
-
-    /**
-     * Test of displayHash method, of class PropertyLogImpl.
-     */
-    @Test
-    public void testDisplayHash() {
+    public void testFind() {
     }
     
 }

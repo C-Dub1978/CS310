@@ -15,126 +15,65 @@ import static org.junit.Assert.*;
  * @author klown
  */
 public class RealtorLogImplTest {
-    RealtorLogImpl r;
-    Realtor bob;
-    Realtor dylan;
-    Realtor carl;
-    Realtor michelle;
-    Realtor evie;
-    Realtor georgia;
-    Realtor anna;
-    Realtor ferdinand;
-    Realtor david;
-    Realtor alice;
-    Realtor lonnie;
-    Realtor leslie;
-    Realtor johnDoe;
+    RealtorLogImpl log;
     
     public RealtorLogImplTest() {
-        
+        log = new RealtorLogImpl();
     }
     
     @Before
     public void setUp() {
-        r = new RealtorLogImpl();
-        bob = new Realtor("BB2222222", "Bob", "Benson", "222-222-2222",
-        0.012);
-        dylan = new Realtor("B2222222B", "Dylan", "Speer",
-        "321-321-3333", 0.5);
-        carl = new Realtor("CC3333333", "Carl", "Combs", "333-333-3333",
-        0.88);
-        michelle = new Realtor("C3333333C", "Michelle", "Ngeachello", 
-        "299-299-2929", 2.5);
-        evie = new Realtor("EE5555555", "Evie", "Easton", "555-555-5555",
-        0.015);
-        georgia = new Realtor("GG7777777", "Georgia", "Green", "777-777-7777",
-        0.2);
-        anna = new Realtor("AA1111111", "Anna", "Astrid", "111-111-1111",
-        0.11);
-        ferdinand = new Realtor("FF6666666", "Ferdinand", "Freebase", "666-666-6666",
-        0.06);
-        david = new Realtor("DD4444444", "David", "Donaho", "111-111-1111",
-        0.11);
-        alice = new Realtor("F6F666666", "Alice", "B.Tokeless", "234-234-2234", 
-        0.420);
-        lonnie = new Realtor("G7777777G", "Lonnie", "Donaho", "299-999-9999", 
-        0.4);
-        leslie = new Realtor("B2B222222", "Leslie", "Lavish", "333-999-8888",
-        0.5);
-        johnDoe = new Realtor("XX1234567", "John", "Doe", "333-333-0000", 0.1);
     }
     
     @After
     public void tearDown() {
-    }    
+    }
 
     /**
-     * Test of getSize method, of class RealtorLogImpl.
+     * Test of add method, of class RealtorLogImpl.
      */
     @Test
-    public void testByteArray() {
-        String license = "CC1122333";
-        System.out.println(r.createHashFromLicense(license));
-    }
-    
-    @Test
-    public void testHashMethod() {
-        String r1 = "EE5555555"; // 3
-        String r2 = "GG7777777"; // 21
-        String r3 = "BB2222222"; // 22
-        String r4 = "AA1111111"; // 13 
-        String r5 = "FF6666666"; // 12
-        String r6 = "DD4444444"; // 17
-        String r7 = "CC3333333"; // 8
-        String r8 = "B2222222B"; // 22
-        String r9 = "F6F666666"; // 12
-        String r10 = "C3333333C"; // 8
-        assertEquals(3, r.createHashFromLicense(r1));
-        assertEquals(21, r.createHashFromLicense(r2));
-        assertEquals(22, r.createHashFromLicense(r3));
-        assertEquals(13, r.createHashFromLicense(r4));
-        assertEquals(12, r.createHashFromLicense(r5));
-        assertEquals(17, r.createHashFromLicense(r6));
-        assertEquals(8, r.createHashFromLicense(r7));
-        assertEquals(22, r.createHashFromLicense(r8));
-        assertEquals(12, r.createHashFromLicense(r9));
-        assertEquals(8, r.createHashFromLicense(r10));
-    }
-    
-    @Test
     public void testAdd() {
-        r.add(bob);
-        r.displayHash();
-        r.add(dylan);
-        r.displayHash();
-        r.add(carl);
-        r.displayHash();
-        r.add(michelle);
-        r.displayHash();
-        r.add(evie);
-        r.displayHash();
-        r.add(georgia);
-        r.displayHash();
-        r.add(lonnie);
-        r.displayHash();
-        r.add(leslie);
-        r.displayHash();
-    }
-    
-    @Test
-    public void testFind() {
-        r.add(bob);        
-        r.add(dylan);        
-        r.add(carl);        
-        r.add(michelle);        
-        r.add(evie);       
-        r.add(lonnie);       
-        r.add(leslie);
-        r.displayHash();
-        assertEquals(bob, r.find("BB2222222"));
-        assertEquals(dylan, r.find("B2222222B"));
-        assertEquals(carl, r.find("CC3333333"));
+        Realtor r1 = new Realtor("AZ1234567", "Hanz", "Brix", "303-333-3333", 0.15);
+        Realtor r2 = new Realtor("ZZ1234567", "Jane", "Doe", "720-399-9999", 0.7);
+        Realtor r3 = new Realtor("MX1234567", "John", "Doe", "444-444-4444", 1.2);
+        Realtor r4 = new Realtor("DB1234567", "Alice", "B.Tokeless", "333-333-3333", 1.2);        
+        log.add(r1);
+        log.add(r2);
+        log.add(r3);
+        log.add(r4);
+        assertEquals(4, log.getSize());
+        log.traverseDisplay(log.getRoot());
+        System.out.println();
+        System.out.println();
+        Realtor test1 = log.find("AZ1234567");
+        Realtor test2 = log.find("ZZ1234567");
+        Realtor test3 = log.find("MX1234567");
+        Realtor test4 = log.find("DB1234567");
+        Realtor test5 = log.find("DL1234");
+        Realtor test6 = log.find("LO12345");
+        Realtor test7 = log.find("LLL4444");
+        assertEquals(r1, test1);
+        assertEquals(r2, test2);
+        assertEquals(r3, test3);
+        assertEquals(r4, test4);
+        assertEquals(null, test5);
+        assertEquals(null, test6);
+        assertEquals(null, test7);
     }
 
+    /**
+     * Test of insert method, of class RealtorLogImpl.
+     */
+    @Test
+    public void testInsert() {
+    }
+
+    /**
+     * Test of clear method, of class RealtorLogImpl.
+     */
+    @Test
+    public void testClear() {
+    }
     
 }

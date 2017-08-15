@@ -1,197 +1,158 @@
 /*
- * Class for keeping track of the Hash Table of realtors and various
+ * Class for keeping track of the BST of realtors and various
  * functionality
  */
 package cs310wilson;
 
-import java.io.UnsupportedEncodingException;
-
 /**
  * Realtor log class
  * @author Chris Wilson
- * @version java assn 5
+ * @version java assn 6
  */
 public class RealtorLogImpl {
-    private Realtor[] hashTable;
-    private final int TABLE_MAXIMUM_SIZE;
-    private final int TABLE_BOUNDARY;
+    private Node<Realtor> rootNode;
     private int size;
-    private int current;
     
     /**
      * Default constructor
      */
     public RealtorLogImpl() {
-        TABLE_MAXIMUM_SIZE = 23;
-        TABLE_BOUNDARY = TABLE_MAXIMUM_SIZE - 1;
-        hashTable = new Realtor[TABLE_MAXIMUM_SIZE];        
+        rootNode = null;
         size = 0;
-        current = 0;
     }
     
-    /** Method to add realtor to the hash table
+    /** Getter, for the root tree node
      *
-     * @param r, realtor object to add
-     * @return boolean value of operations
+     * @return the root node
      */
-    public boolean add(Realtor r) {
-        if(size == TABLE_BOUNDARY) {
-            System.out.println("Error, hash table is full and no " + 
-                    " chaining is implemented!");
-            System.out.println("Realtor " + r.getLicenseNum() + " not" +
-                    " added");
-            return false;
-        }
-        int index = createHashFromLicense(r.getLicenseNum());
-        boolean added = false;        
-        if(hashTable[index] == null && index != TABLE_BOUNDARY) {
-            hashTable[index] = r;            
-            added = true;
-            size++;
-        }
-        else {            
-            added = rehash(r, index);
-            if(added) {
-                size++;                
-            }
-        }
-        return added;
-    }    
-        
-    /** Method to see if the table is empty
-     *
-     * @return boolean value of size
-     */
-    public boolean isEmpty() {
-        return size == 0;
+    public Node<Realtor> getRoot() {
+        return rootNode;
     }
     
-    /** Method to get table size
-     *
-     * @return size, the size of the table
-     */
-    public int size() {
-        return size;
-    }
-
-    /** Method to create a hash key from the realtor license
-     *
-     * @param license, the realtors license
-     * @return key
-     */
-    public int createHashFromLicense(String license) {
-        int total = 0;
-        byte[] licenseToBytes = null;
-        try {
-        licenseToBytes = license.getBytes("US-ASCII");
-        }
-        catch(UnsupportedEncodingException e) {
-            System.out.println("Error encoding license to ASCII bytes");
-        }
-        for(int i = 0; i < license.length(); i++) {
-            total += licenseToBytes[i];
-        }        
-        return total % TABLE_MAXIMUM_SIZE;
-    }
-    
-    /** Method to rehash if there is a collision
+    /** Add method, to add a realtor to the tree
      *
      * @param r, the realtor object
-     * @param startIndex, the index where the collision took place
      * @return boolean value of operation
      */
-    public boolean rehash(Realtor r, int startIndex) {        
-        if(startIndex == TABLE_BOUNDARY - 1 || startIndex == TABLE_BOUNDARY) {
-            current = 0;
-        }
-        else {
-            current = startIndex + 1;
-        }        
+    public boolean add(Realtor r) {
+        Node<Realtor> newNode = new Node("REALTOR");
+        newNode.setData(r);
+        newNode.setKey(r.getLicenseNum());
         boolean added = false;
-        while(!added && current != startIndex) {
-            if(hashTable[current] == null) {
-                hashTable[current] = r;
-                size++;
-                added = true;                
-                return true;
-            }
-            else {
-                current++;
-                if(current == TABLE_MAXIMUM_SIZE) {
-                    current = 0;
-                }
-            }
+        
+        if(rootNode == null) {
+            rootNode = newNode;
+            size++;
+            added = true;
         }        
-        return false;
+        else {
+           added = insert(rootNode, newNode); 
+        }
+        return added;
     }
     
-    /** Method to find a realtor based on license number
+    /** Helper method for the add method, traverses tree until it finds 
+     * a spot for the new node, using recursion
      *
-     * @param license, the realtor license
-     * @return the Realtor object, if found, or null
+     * @param root, the subtree to compare
+     * @param newNode, the node to be inserted
+     * @return boolean value of operation
+     */
+    public boolean insert(Node<Realtor> root, Node<Realtor> newNode) {
+        boolean added = false;
+        if(root != null) {
+            if(root.getData().compareToLicense(newNode.getData()) > 0) {                
+                if(root.getLeft() == null) {
+                    root.setLeft(newNode);
+                    size++;
+                    added = true;
+                }
+                else {
+                return insert(root.getLeft(), newNode);
+                }
+            }
+            else if(root.getData().compareToLicense(newNode.getData()) < 0) {                
+                if(root.getRight() == null) {
+                    root.setRight(newNode);
+                    size++;
+                    added = true;
+                }
+                else {
+                return insert(root.getRight(), newNode);
+                }
+            }            
+        }
+        return added;
+    }
+    
+    /** Method to find a realtor by license
+     *
+     * @param license, the realtor license to search for
+     * @return the Realtor object, if found, or null if not found
      */
     public Realtor find(String license) {
-        int key = createHashFromLicense(license);        
-        boolean found = false;
-        if(key >= TABLE_BOUNDARY) {
-            current = 0;
+        if(license != null) {
+            if(rootNode != null) {
+                return find(rootNode, license);                
+            }
+            
         }
-        else {
-            current = key;
-            if(hashTable[current] != null) {
-                if(hashTable[current].getLicenseNum().equals(license)) {                    
-                    return hashTable[current];
-                }
-                else {
-                    current = key + 1;
-                }
-            }
-            else {
-                current = key + 1;
-            }            
-        }        
-        while(!found && current != key) {            
-            if(current == TABLE_BOUNDARY) {
-                current = 0;
-            }
-            else {
-                if(hashTable[current] != null) {
-                    if(hashTable[current].getLicenseNum().equals(license)) {
-                        found = true;                        
-                        return hashTable[current];
-                    }
-                    else {
-                        current++;
-                    }
-                }
-                else {
-                    current++;
-                }
-            }
-        }
-        System.out.println("Realtor " + license + " not found");
         return null;
-    }  
+    }
     
-    /** Method to display the entire hash table
+    /** Helper method for the find method above, overloaded
      *
+     * @param root, the subtree to compare
+     * @param license, the license to search for
+     * @return the Realtor object, if found, or null if not found
      */
-    public void displayHash() {
-        System.out.println("Realtor Hash Table:");
-        for(int i = 0; i < TABLE_MAXIMUM_SIZE; i++) {
-            String index = hashTable[i] == null ? "is empty" :
-                    "contains Realtor " + hashTable[i].getLicenseNum() + 
-                    ", " + hashTable[i].getFirstName() + 
-                    " " + hashTable[i].getLastName();
-            System.out.println("\tIndex " + i + " " + index);
+    public Realtor find(Node<Realtor> root, String license) {
+        if(root != null) {
+            if(root.getData().getLicenseNum().equals(license)) {
+                return root.getData();
+            }
+            else {
+                if(root.getData().compareToLicense(license) > 0) {
+                    return find(root.getLeft(), license);
+                }
+                else if(root.getData().compareToLicense(license) < 0) {
+                    return find(root.getRight(), license);
+                }
+            }
+        }
+        return null;
+    }
+    
+    /** Method to traverse the display
+     *
+     * @param n, root/subtree node
+     */
+    public void traverseDisplay() {
+        System.out.println("Realtor List: ");        
+        traverseDisplayHelper(rootNode);
+    }
+    
+    public void traverseDisplayHelper(Node n) {      
+        if(n != null) {
+             traverseDisplayHelper(n.getLeft());            
+            System.out.println("\tData: " + n.getData().toString());        
+            traverseDisplayHelper(n.getRight());
         }
     }
-
-    /** Method to get the table data field
+    
+    /** Method to clear the whole tree
      *
-     * @return the table data field
      */
-    public Realtor[] getTable() {
-        return hashTable;
+    public void clear() {
+        rootNode = null;
+        size = 0;
+    }
+    
+    /** Getter, for the size of the tree
+     *
+     * @return size, the data field
+     */
+    public int getSize() {
+        return size;
     }
 }

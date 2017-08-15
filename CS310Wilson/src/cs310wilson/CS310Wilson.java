@@ -13,7 +13,7 @@ import java.util.Scanner;
 /** Main Class, reads the data from the specified file and builds objects with the data
  * 
  * @author Chris Wilson
- * @version x Java Assn 5
+ * @version x Java Assn 6
  */
 public class CS310Wilson {
     static RealtorLogImpl realtorLogImpl = new RealtorLogImpl();
@@ -27,17 +27,18 @@ public class CS310Wilson {
      */
     public static void main(String[] args) {        
         processDataFile();
-        realtorLogImpl.displayHash();
-        System.out.println("");
-        propertyLogImpl.displayHash();
-        generateReport(REQUESTS_FILE);
+        realtorLogImpl.traverseDisplay();
+        System.out.println();
+        propertyLogImpl.traverseDisplay();
+        System.out.println();
+        generateReport();
     }    
     
     /**
      * Method to process the data file
      */
     public static void processDataFile() {
-        final String INPUT_FILENAME = "input/assn5input1.txt";
+        final String INPUT_FILENAME = "input/assn6input1.txt";
         File inputFile = null;
         Scanner inputScanner = null;
         System.out.println("Reading data from file: " + INPUT_FILENAME);
@@ -125,9 +126,9 @@ public class CS310Wilson {
      * 
      * @param filename, name of the output file name
      */
-    public static void generateReport(String filename) {
+    public static void generateReport() {
             PrintImpl printer = new PrintImpl(realtorLogImpl, propertyLogImpl);
-            printer.generateReport(filename);
+            printer.generateReport(REQUESTS_FILE);
     }
     
 }

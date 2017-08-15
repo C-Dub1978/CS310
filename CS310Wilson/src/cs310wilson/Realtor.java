@@ -258,7 +258,7 @@ public class Realtor {
         String thisLicense = this.getLicenseNum();
         String compareLicense = "";
         int thisSum = 0;
-        int compareSum = 0;
+        int thatSum = 0;
         try {
             obj = (Realtor) o;
             compareLicense = obj.getLicenseNum();
@@ -278,15 +278,50 @@ public class Realtor {
         }
         for(int i = 0; i < thisLength; i++) {
             thisSum += thisLicense.charAt(i);
-            compareSum += compareLicense.charAt(i);
+            thatSum += compareLicense.charAt(i);
         }
-        if(thisSum > compareSum) {
+        if(thisSum > thatSum) {
             return 1;
         }
-        else if(compareSum > thisSum) {
+        else if(thatSum > thisSum) {
             return -1;
         }
-        else if(compareSum == thisSum) {
+        else if(thatSum == thisSum) {
+            return 0;
+        }
+        return -1;
+    }
+    
+    /** Compare to license overload, with a license as parameter
+     *
+     * @param license, the license to compare to "this"
+     * @return value of comparator
+     */
+    public int compareToLicense(String license) {        
+        String thisLicense = this.getLicenseNum();
+        String compareLicense = license;        
+        int thisSum = 0;
+        int thatSum = 0;
+        int thisLength = thisLicense.length();
+        int compareLength = compareLicense.length();
+        
+        if(thisLength > compareLength) {            
+            return 1;
+        }
+        else if(compareLength > thisLength) {            
+            return -1;
+        }
+        for(int i = 0; i < thisLength; i++) {
+            thisSum += thisLicense.charAt(i);
+            thatSum += compareLicense.charAt(i);
+        }
+        if(thisSum > thatSum) {            
+            return 1;
+        }
+        else if(thatSum > thisSum) {            
+            return -1;
+        }
+        else if(thatSum == thisSum) {            
             return 0;
         }
         return -1;

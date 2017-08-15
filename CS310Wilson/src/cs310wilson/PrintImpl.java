@@ -1,6 +1,5 @@
 /*
- * Class used to iterate through the realtor and property tables, and 
- * generate and output file report on all realtor/property data
+ * Class for creating an output report, called on by main
  */
 package cs310wilson;
 
@@ -9,67 +8,67 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-/**
- * PrintImpl class for report generation
+/** Class that sets the logs as it's data fields then calls on one method
+ * to write data
+ *
  * @author Chris Wilson
- * @version java assn 5
+ * @version java assn6
  */
 public class PrintImpl {
-     private final String outputReport;
-     private RealtorLogImpl realtorMap;
-     private PropertyLogImpl propertyMap;
+    private RealtorLogImpl realtorLog;
+    private PropertyLogImpl propertyLog;
+    private final String outputFileName = "output/outputFile.txt";
     
-     /**
-      * Constructor
-      * @param realtors, the realtor hash table
-      * @param properties, the property hash map
-      */
-     public PrintImpl(RealtorLogImpl realtors, PropertyLogImpl properties) {
-         outputReport = "output/assn5SalesReport";
-         realtorMap = realtors;
-         propertyMap = properties;
-     }
-     
-     /** Method to generate the report
-      * 
-      * @param input, the input file name 
-      */
-     public void generateReport(String input) {
-         File outputFile = null;
-         File inputFile = null;
-         Scanner inputScanner = null;
-         PrintWriter outputWriter = null;
-         try {
-             inputFile = new File(input);
-             outputFile = new File(outputReport);
-             inputScanner = new Scanner(inputFile);
-             outputWriter = new PrintWriter(outputFile);
-         }
-         catch(IOException e) {
-             System.out.println("Error opening file " + input);
-         }
-         while(inputScanner.hasNextLine()) {
-             String[] dataLine = inputScanner.nextLine().split(" ");
-             if(dataLine.length > 0) {                
-                 Realtor r = realtorMap.find(dataLine[0]);
-                 if(r != null) {
-                     outputWriter.println("Realtor " + r.getLicenseNum() + 
-                             ", " + r.getFirstName() + " " + r.getLastName());
-                     for(int i = 1; i < dataLine.length; i++) {
-                         Property p = propertyMap.
-                                 find(Integer.parseInt(dataLine[i]));
-                         if(p != null) {
-                             String sold = p.isSold() ? " is SOLD" :
-                                     " is available for $" + p.getAskingPrice();
-                             outputWriter.println("\tProperty " + dataLine[i] +
-                                     sold);
-                         }
-                     }
-                 }
-             }
-         }
-         inputScanner.close();
-         outputWriter.close();
-     }    
+    /** Constructor
+     *
+     * @param realtor, the realtor tree
+     * @param property, the property tree
+     */
+    public PrintImpl(RealtorLogImpl realtor, PropertyLogImpl property) {
+        realtorLog = realtor;
+        propertyLog = property;
+    }
     
+    /** Method to generate and write the output report
+     *
+     * @param filename, the input file to search the data structures for
+     */
+    public void generateReport(String filename) {
+        File inputFile;
+        File outputFile;
+        PrintWriter outputWriter = null;
+        Scanner inputScanner = null;
+        
+        try {
+            inputFile = new File(filename);
+            outputFile = new File(outputFileName);
+            outputWriter = new PrintWriter(outputFile);
+            inputScanner = new Scanner(inputFile);
+        } catch(IOException e) {
+            System.out.println("Error with IO, can't create file");
+        }
+        while(inputScanner.hasNextLine()) {
+            String[] line = inputScanner.nextLine().split(" ");
+            Realtor realtor = realtorLog.find(line[0]);
+            if(realtor != null) {
+                outputWriter.println("Realtor " + realtor.getLicenseNum() + ", "
+                        + realtor.getFirstName() + " " + realtor.getLastName());
+                for(int i = 1; i < line.length; i++) {
+                    Property p = propertyLog.find(Integer.parseInt(line[i]));
+                    if(p != null) {
+                        Double price = p.getAskingPrice();
+                        String soldStatus = p.isSold() ? " Is SOLD" :
+                                " Is available for $" + price;
+                        outputWriter.println("\tProperty " + p.getMls() +
+                                soldStatus);
+                    }
+                    else {
+                        outputWriter.println();
+                    }
+                }
+            }
+        }
+        outputWriter.close();
+        inputScanner.close();
+    }
 }
